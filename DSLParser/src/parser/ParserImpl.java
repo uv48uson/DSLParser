@@ -1,57 +1,58 @@
 package parser;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.OutputStream;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.EObject;
 import org.w3c.dom.Document;
-import org.xtext.example.mydsl.myDsl.Model;
+
+import io.FileIO;
 
 public class ParserImpl implements Parser {
-	ResourceHandler resourceHandler = new ResourceHandler();
+	FileIO fileIO;
+	
+	public ParserImpl(){
+		fileIO = new FileIO("tmp");
+	}
+	
+	public ParserImpl(String fileName){
+		fileIO = new FileIO(fileName);
+	}
 
 	@Override
-	public Document parse(InputStream io) {
-		Model model = readFromStream(io);
-		
-		Resource resourceOutput = resourceHandler.createResourceAt("tmp.xml");
-		resourceOutput.getContents().add(model);
-		
-		Map<String, Boolean> options = new HashMap<String, Boolean>();
-		options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.TRUE);
-		Document doc=((XMLResource)resourceOutput).save(null, options, null);
-		return doc;
+	public Document parse(InputStream inputStream) throws IOException {
+		fileIO.writeStreamToFile("mydsl", inputStream);
+		EObject model = fileIO.readModelFromFile("mydsl");
+		fileIO.writeModelToFile("xml", model);
+		return fileIO.readDocumentFromFile();
 	}
-	
-	private Model readFromStream(InputStream inputStream) {
-		
-		Resource resourceInput = resourceHandler.createResourceAt("tmp.mydsl");
-		
-		try {
-			resourceInput.load(inputStream, resourceHandler.createResourceSet().getLoadOptions());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return (Model) resourceInput.getContents().get(0);
-	}
-	
-	public static void main(String[] args) throws IOException {
-		Parser parser = new ParserImpl();
-		
-		InputStream is;
 
-		try {
-			is = new FileInputStream("C://Users/z003rrpp.AD001/workspace/Java Standalone Application Test/src/test/test.mydsl");
-			parser.parse(is);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public OutputStream deparse(Document doc) throws IOException {
+		fileIO.writeDocumentToFile("xml", doc);
+		EObject model = fileIO.readModelFromFile("xml");
+		fileIO.writeModelToFile("mydsl", model);
+		return fileIO.readOutputStreamFromFile("mydsl");
+	}
+	public static void main(String[] args) throws IOException {
+		FileIO fileIO = new FileIO("test");
+		//-------------------------------------------PARSE------------------------------------------------
+		
+		Parser parser = new ParserImpl("simpleTestParse");
+		
+		InputStream inputStream = fileIO.readInputStreamFromFile("mydsl");
+		Document doc = parser.parse(inputStream);
+		fileIO.writeDocumentToFile("xml", doc);
+
+		//-------------------------------------------DEPARSE------------------------------------------------
+		
+		parser = new ParserImpl("simpleTestDeparse");
+		
+		doc = fileIO.readDocumentFromFile();
+		parser.deparse(doc);
+		
+		//-----------------------------------------------------------------------------------------------
+		
 		System.out.println("Success");
 	}
 
