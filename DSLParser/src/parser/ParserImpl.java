@@ -8,6 +8,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import io.FileIO;
 import io.TableEdgeLayout;
@@ -32,7 +33,7 @@ public class ParserImpl implements Parser {
 	}
 
 	@Override
-	public Document parse(InputStream inputStream) throws IOException {
+	public Document parse(InputStream inputStream) throws IOException, MydslParsingException, SAXException {
 		log.info(new Pair<String,String>("Start Parsing", "Start"));
 		
 		fileIO.writeStreamToFile("mydsl", inputStream);
@@ -44,7 +45,7 @@ public class ParserImpl implements Parser {
 		return doc;
 	}
 
-	public OutputStream deparse(Document doc) throws IOException {
+	public OutputStream deparse(Document doc) throws IOException, MydslParsingException, SAXException {
 		log.info(new Pair<String,String>("Start Deparsing", "Start"));
 		
 		fileIO.writeDocumentToFile("xml", doc);
