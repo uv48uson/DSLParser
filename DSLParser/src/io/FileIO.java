@@ -20,20 +20,36 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.w3c.dom.Document;
 
+import javafx.util.Pair;
+
 public class FileIO {
 	private String fileName;
 	private ResourceHandler resourceHandler = new ResourceHandler();
+	private static Logger log = Logger.getLogger( FileIO.class );
+	
+	public static void init(){
+		SimpleLayout layout = new TableContentLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		log.removeAllAppenders();
+		log.setAdditivity(false);
+		log.addAppender(consoleAppender);
+	}
 
 	public FileIO(String fileName) {
 		this.fileName = fileName;
 	}
 
 	public Document readDocumentFromFile() {
+		log.info(new Pair<String, String>("File:" + fileName + ".xml","Document"));
+		
 		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + ".xml");
 		Map<String, Boolean> options = new HashMap<String, Boolean>();
 		options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.TRUE);
@@ -41,6 +57,8 @@ public class FileIO {
 	}
 
 	public EObject readModelFromFile(String fileType) throws IOException {
+		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"Model"));
+		
 		Resource resourceInput = resourceHandler.getResourceFrom(fileName + "." + fileType);
 		resourceInput.load(resourceHandler.createResourceSet().getLoadOptions());
 
@@ -48,6 +66,8 @@ public class FileIO {
 	}
 
 	public OutputStream readOutputStreamFromFile(String fileType) throws IOException {
+		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"OutputStream"));
+		
 		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
 		OutputStream out = new ByteArrayOutputStream();
 		resourceOutput.save(out, Collections.EMPTY_MAP);
@@ -57,6 +77,8 @@ public class FileIO {
 	}
 
 	public InputStream readInputStreamFromFile(String fileType) throws IOException {
+		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"InputStream"));
+		
 		File initialFile = resourceHandler.getFileFrom(fileName + "." + fileType);
 		InputStream targetStream = FileUtils.openInputStream(initialFile);
 
@@ -64,12 +86,16 @@ public class FileIO {
 	}
 
 	public void writeStreamToFile(String fileType, InputStream inputStream) throws IOException {
+		log.info(new Pair<String, String>("InputStream", "File:" + fileName + "." + fileType));
+		
 		Resource resourceOutput = resourceHandler.createResourceAt(fileName + "." + fileType);
 		resourceOutput.load(inputStream, resourceHandler.createResourceSet().getLoadOptions());
 		resourceOutput.save(Collections.EMPTY_MAP);
 	}
 
 	public void writeModelToFile(String fileType, EObject model) throws IOException {
+		log.info(new Pair<String, String>("Model", "File:" + fileName + "." + fileType));
+		
 		Resource resourceOutput = resourceHandler.createResourceAt(fileName + "." + fileType);
 		resourceOutput.getContents().add(model);
 		
@@ -82,6 +108,8 @@ public class FileIO {
 	}
 
 	private InputStream transformDocumentToStream(Document doc) {
+		log.info(new Pair<String, String>("Document", "InputStream"));
+		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Source xmlSource = new DOMSource(doc);
 		Result outputTarget = new StreamResult(outputStream);

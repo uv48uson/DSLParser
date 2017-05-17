@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.w3c.dom.Document;
 
 import io.FileIO;
+import io.TableEdgeLayout;
+import javafx.util.Pair;
 
 public class ParserImpl implements Parser {
+	private static Logger log = Logger.getLogger( ParserImpl.class );
 	FileIO fileIO;
 	
 	public ParserImpl(){
@@ -19,41 +24,36 @@ public class ParserImpl implements Parser {
 	public ParserImpl(String fileName){
 		fileIO = new FileIO(fileName);
 	}
+	
+	public static void init(){
+		log.removeAllAppenders();
+		log.addAppender(new ConsoleAppender(new TableEdgeLayout()));
+		log.setAdditivity(false);
+	}
 
 	@Override
 	public Document parse(InputStream inputStream) throws IOException {
+		log.info(new Pair<String,String>("Start Parsing", "Start"));
+		
 		fileIO.writeStreamToFile("mydsl", inputStream);
 		EObject model = fileIO.readModelFromFile("mydsl");
 		fileIO.writeModelToFile("xml", model);
-		return fileIO.readDocumentFromFile();
+		Document doc = fileIO.readDocumentFromFile();
+		
+		log.info(new Pair<String,String>("Finished Parsing", "End"));
+		return doc;
 	}
 
 	public OutputStream deparse(Document doc) throws IOException {
+		log.info(new Pair<String,String>("Start Deparsing", "Start"));
+		
 		fileIO.writeDocumentToFile("xml", doc);
 		EObject model = fileIO.readModelFromFile("xml");
 		fileIO.writeModelToFile("mydsl", model);
-		return fileIO.readOutputStreamFromFile("mydsl");
-	}
-	public static void main(String[] args) throws IOException {
-		FileIO fileIO = new FileIO("test");
-		//-------------------------------------------PARSE------------------------------------------------
+		OutputStream out = fileIO.readOutputStreamFromFile("mydsl");
 		
-		Parser parser = new ParserImpl("simpleTestParse");
-		
-		InputStream inputStream = fileIO.readInputStreamFromFile("mydsl");
-		Document doc = parser.parse(inputStream);
-		fileIO.writeDocumentToFile("xml", doc);
-
-		//-------------------------------------------DEPARSE------------------------------------------------
-		
-		parser = new ParserImpl("simpleTestDeparse");
-		
-		doc = fileIO.readDocumentFromFile();
-		parser.deparse(doc);
-		
-		//-----------------------------------------------------------------------------------------------
-		
-		System.out.println("Success");
+		log.info(new Pair<String,String>("Finished Deparsing", "End"));
+		return out;
 	}
 
 }
