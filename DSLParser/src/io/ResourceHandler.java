@@ -79,7 +79,7 @@ public class ResourceHandler {
 		walk.close();
 		
 		for(Path path: paths){
-			if(path.endsWith(".xml") || path.endsWith(".mydsl")){
+			if(path.toString().contains(".xml") || path.toString().contains(".mydsl")){
 				getResourceFrom(path.getFileName().toString());
 			}
 		}
