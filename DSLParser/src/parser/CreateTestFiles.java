@@ -12,23 +12,37 @@ public class CreateTestFiles {
 
 	public static void main(String[] args) throws IOException, MydslParsingException, SAXException {
 		initLogger();
+		
+		//***********************************************SIMPLE_TEST_CONTROL*******************************************
 
-		FileIO fileIO = new FileIO("test");
-		InputStream inputStream = fileIO.readInputStreamFromFile("mydsl");
+		FileIO fileIO = new FileIO("simpleTestControl");
+		fileIO.cleanUp();
+		InputStream inputStream = fileIO.readInputStreamFromFile("mydsl");		
 		
-		//***********************************************PARSE*******************************************
-		
-		Parser parser = new ParserImpl("simpleTestParse");
+		Parser parser = new ParserImpl("tmp");
 		Document doc = parser.parse(inputStream);
 		fileIO.writeDocumentToFile("xml", doc);
 
-		//**********************************************DEPARSE******************************************
 		
-		parser = new ParserImpl("simpleTestDeparse");
-		parser.deparse(doc);
+		//***********************************************COMBINED_TEST_CONTROL*******************************************
 		
-		//***********************************************************************************************
+		fileIO = new FileIO("base");
+		fileIO.cleanUp();
+		inputStream = fileIO.readInputStreamFromFile("mydsl");
 		
+		parser = new ParserImpl("tmp");
+		doc = parser.parse(inputStream);
+		fileIO.writeDocumentToFile("xml", doc);
+		
+		fileIO = new FileIO("combinedTestControl");
+		fileIO.cleanUp();
+		inputStream = fileIO.readInputStreamFromFile("mydsl");
+		
+		parser = new ParserImpl("tmp");
+		doc = parser.parse(inputStream);
+		fileIO.writeDocumentToFile("xml", doc);
+		
+
 		System.out.println("Success");
 	}
 	
