@@ -1,6 +1,5 @@
 package io;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -108,9 +107,5 @@ public class ResourceHandler {
 		Resource resource = resourceSet
 				.createResource(fileURI);
 		return resource;
-	}
-
-	public File getFileFrom(String uri) {
-		return new File("./target/classes" + RESOURCE_DIRECTORY_URL_FRAGMENT + uri);
 	}
 }

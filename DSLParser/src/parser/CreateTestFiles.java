@@ -9,41 +9,58 @@ import org.xml.sax.SAXException;
 import io.FileIO;
 
 public class CreateTestFiles {
+	public static Parser parser = new ParserImpl();
 
 	public static void main(String[] args) throws IOException, MydslParsingException, SAXException {
 		initLogger();
 		
-		//***********************************************SIMPLE_TEST_CONTROL*******************************************
+		//***********************************************simpleParseTestControl*******************************************
 
-		FileIO fileIO = new FileIO("simpleTestControl");
-		fileIO.cleanUp();
-		InputStream inputStream = fileIO.readInputStreamFromFile("mydsl");		
+		createParseTestDocument("simpleParseTestControl");
 		
-		Parser parser = new ParserImpl("tmp");
-		Document doc = parser.parse(inputStream);
-		fileIO.writeDocumentToFile("xml", doc);
+		//***********************************************combinedParseTestControl*******************************************
+		
+		createParseTestDocument("combinedParseTestControl_base");
+		
+		createParseTestDocument("combinedParseTestControl_update");
 
 		
-		//***********************************************COMBINED_TEST_CONTROL*******************************************
+		//***********************************************simpleDeparseTestControl*******************************************
 		
-		fileIO = new FileIO("base");
-		fileIO.cleanUp();
-		inputStream = fileIO.readInputStreamFromFile("mydsl");
+		createDeparseTestDocument("simpleDeparseTestControl");
 		
-		parser = new ParserImpl("tmp");
-		doc = parser.parse(inputStream);
-		fileIO.writeDocumentToFile("xml", doc);
+		//***********************************************combinedDeparseTestControl*******************************************
 		
-		fileIO = new FileIO("combinedTestControl");
-		fileIO.cleanUp();
-		inputStream = fileIO.readInputStreamFromFile("mydsl");
+		createDeparseTestDocument("combinedDeparseTestControl_base");
 		
-		parser = new ParserImpl("tmp");
-		doc = parser.parse(inputStream);
-		fileIO.writeDocumentToFile("xml", doc);
+		createDeparseTestDocument("combinedDeparseTestControl_update");
 		
 
 		System.out.println("Success");
+	}
+
+	private static void createDeparseTestDocument(String fileName) throws IOException, MydslParsingException, SAXException {
+		FileIO fileIO;
+		Document inputDocument;
+		InputStream resultStream;
+		fileIO = new FileIO(fileName);
+		fileIO.cleanUp("mydsl");
+		inputDocument = fileIO.readDocumentFromFile();
+		
+		resultStream = parser.deparse(inputDocument);
+		fileIO.writeStreamToFile("mydsl", resultStream);
+	}
+
+	private static void createParseTestDocument(String fileName) throws IOException, MydslParsingException, SAXException {
+		FileIO fileIO;
+		InputStream inputStream;
+		Document doc;
+		fileIO = new FileIO(fileName);
+		fileIO.cleanUp("xml");
+		inputStream = fileIO.readInputStreamFromFile("mydsl");
+		
+		doc = parser.parse(inputStream);
+		fileIO.writeDocumentToFile("xml", doc);
 	}
 	
 	private static void initLogger(){

@@ -2,10 +2,8 @@ package io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +16,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -81,25 +78,17 @@ public class FileIO {
 		}
 	}
 
-	public OutputStream readOutputStreamFromFile(String fileType) throws IOException, MydslParsingException, SAXException {
-		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"OutputStream"));
+	public InputStream readInputStreamFromFile(String fileType) throws IOException, MydslParsingException, SAXException {
+		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"InputStream"));
 		
 		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
-		OutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		resourceOutput.save(out, Collections.EMPTY_MAP);
 		checkForResourceErrors(fileType, resourceOutput);
 
-		return out;
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+		return inputStream;
 
-	}
-
-	public InputStream readInputStreamFromFile(String fileType) throws IOException {
-		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"InputStream"));
-		
-		File initialFile = resourceHandler.getFileFrom(fileName + "." + fileType);
-		InputStream targetStream = FileUtils.openInputStream(initialFile);
-
-		return targetStream;
 	}
 
 	public void writeStreamToFile(String fileType, InputStream inputStream) throws IOException, MydslParsingException, SAXException {
@@ -144,11 +133,8 @@ public class FileIO {
 		return is;
 	}
 	
-	public void cleanUp() throws IOException{
-		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + "xml");
-		resourceOutput.delete(Collections.EMPTY_MAP);
-		
-		resourceOutput = resourceHandler.getResourceFrom(fileName + "." + "mydsl");
+	public void cleanUp(String fileType) throws IOException{
+		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
 		resourceOutput.delete(Collections.EMPTY_MAP);
 	}
 }
