@@ -40,6 +40,7 @@ public class ParserImpl implements Parser {
 		EObject model = fileIO.readModelFromFile("mydsl");
 		fileIO.writeModelToFile("xml", model);
 		Document doc = fileIO.readDocumentFromFile();
+		fileIO.cleanUp();
 		
 		log.info(new Pair<String,String>("Finished Parsing", "End"));
 		return doc;
@@ -52,6 +53,7 @@ public class ParserImpl implements Parser {
 		EObject model = fileIO.readModelFromFile("xml");
 		fileIO.writeModelToFile("mydsl", model);
 		OutputStream out = fileIO.readOutputStreamFromFile("mydsl");
+		fileIO.cleanUp();
 		
 		log.info(new Pair<String,String>("Finished Deparsing", "End"));
 		return out;

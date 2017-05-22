@@ -116,6 +116,7 @@ public class FileIO {
 		log.info(new Pair<String, String>("Model", "File:" + fileName + "." + fileType));
 		
 		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
+		resourceOutput.getContents().clear();
 		resourceOutput.getContents().add(model);
 		
 		resourceOutput.save(Collections.EMPTY_MAP);
@@ -141,5 +142,13 @@ public class FileIO {
 		} 
 		InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
 		return is;
+	}
+	
+	public void cleanUp() throws IOException{
+		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + "xml");
+		resourceOutput.delete(Collections.EMPTY_MAP);
+		
+		resourceOutput = resourceHandler.getResourceFrom(fileName + "." + "mydsl");
+		resourceOutput.delete(Collections.EMPTY_MAP);
 	}
 }
