@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -64,7 +63,7 @@ public class FileIO {
 		log.info(new Pair<String, String>("File:" + fileName + "." + fileType,"Model"));
 		
 		Resource resourceInput = resourceHandler.getResourceFrom(fileName + "." + fileType);
-		resourceInput.load(resourceHandler.createResourceSet().getLoadOptions());
+		resourceInput.load(resourceHandler.getLoadOptions());
 		checkForResourceErrors(fileType, resourceInput);
 
 		return resourceInput.getContents().get(0);
@@ -106,8 +105,8 @@ public class FileIO {
 	public void writeStreamToFile(String fileType, InputStream inputStream) throws IOException, MydslParsingException, SAXException {
 		log.info(new Pair<String, String>("InputStream", "File:" + fileName + "." + fileType));
 		
-		Resource resourceOutput = resourceHandler.createResourceAt(fileName + "." + fileType);
-		resourceOutput.load(inputStream, resourceHandler.createResourceSet().getLoadOptions());
+		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
+		resourceOutput.load(inputStream, resourceHandler.getLoadOptions());
 		checkForResourceErrors(fileType, resourceOutput);
 		resourceOutput.save(Collections.EMPTY_MAP);
 		checkForResourceErrors(fileType, resourceOutput);
@@ -116,7 +115,7 @@ public class FileIO {
 	public void writeModelToFile(String fileType, EObject model) throws IOException, MydslParsingException, SAXException {
 		log.info(new Pair<String, String>("Model", "File:" + fileName + "." + fileType));
 		
-		Resource resourceOutput = resourceHandler.createResourceAt(fileName + "." + fileType);
+		Resource resourceOutput = resourceHandler.getResourceFrom(fileName + "." + fileType);
 		resourceOutput.getContents().add(model);
 		
 		resourceOutput.save(Collections.EMPTY_MAP);
@@ -136,16 +135,10 @@ public class FileIO {
 		Result outputTarget = new StreamResult(outputStream);
 		try {
 			TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
-		} catch (TransformerConfigurationException e1) {
-			// TODO Auto-generated catch block
+		} catch (TransformerException|TransformerFactoryConfigurationError e1) {
+			log.error(e1.getMessage());
 			e1.printStackTrace();
-		} catch (TransformerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		} 
 		InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
 		return is;
 	}
