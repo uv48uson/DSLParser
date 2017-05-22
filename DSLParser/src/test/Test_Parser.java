@@ -1,7 +1,9 @@
 package test;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
@@ -24,8 +26,27 @@ public class Test_Parser extends XMLTestCase{
 	}
 	
 	@Test
-	public void test_simpleTest() throws IOException, MydslParsingException, SAXException {
-		FileIO fileIOControl = new FileIO("simpleTestControl");
+	public void test_simpleParseTest() throws IOException, MydslParsingException, SAXException {
+		checkParsing("simpleParseTestControl");
+	}
+	
+	@Test
+	public void test_simpleDeparseTest() throws IOException, MydslParsingException, SAXException {
+		checkDeparsing("simpleDeparseTestControl");
+	}
+	
+	@Test
+	public void test_combinedParseTest() throws IOException, MydslParsingException, SAXException {
+		checkParsing("combinedParseTestControl_update");
+	}
+	
+	@Test
+	public void test_combinedDeparseTest() throws IOException, MydslParsingException, SAXException {
+		checkDeparsing("combinedDeparseTestControl_update");
+	}
+	
+	private void checkParsing(String fileName) throws IOException, MydslParsingException, SAXException{
+		FileIO fileIOControl = new FileIO(fileName);
 		Document controlDoc = fileIOControl.readDocumentFromFile();
 		
 		Parser parser = new ParserImpl();
@@ -37,17 +58,13 @@ public class Test_Parser extends XMLTestCase{
         assertXMLEqual(controlDoc, resultDoc);
 	}
 	
-	@Test
-	public void test_combinedTest() throws IOException, MydslParsingException, SAXException {
-		FileIO fileIOControl = new FileIO("combinedTestControl");
-		Document controlDoc = fileIOControl.readDocumentFromFile();
+	private void checkDeparsing(String fileName) throws IOException, MydslParsingException, SAXException{
+		FileIO fileIOControl = new FileIO(fileName);
+		InputStream controlStream = fileIOControl.readInputStreamFromFile("mydsl");
 		
 		Parser parser = new ParserImpl();
-		Document resultDoc = parser.parse(fileIOControl.readInputStreamFromFile("mydsl"));
+		InputStream resultStream = parser.deparse(fileIOControl.readDocumentFromFile());
 		
-		XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        
-        assertXMLEqual(controlDoc, resultDoc);
+        assertTrue(IOUtils.contentEquals( controlStream, resultStream));
 	}
 }
