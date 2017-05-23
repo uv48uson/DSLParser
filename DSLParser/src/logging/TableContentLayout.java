@@ -1,4 +1,4 @@
-package io;
+package logging;
 
 import org.apache.log4j.spi.LoggingEvent;
 
