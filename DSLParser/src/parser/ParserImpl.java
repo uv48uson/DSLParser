@@ -10,8 +10,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import io.FileIO;
-import io.TableEdgeLayout;
 import javafx.util.Pair;
+import logging.TableEdgeLayout;
 
 public class ParserImpl implements Parser {
 	private static Logger log = Logger.getLogger(ParserImpl.class);

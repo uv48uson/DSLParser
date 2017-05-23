@@ -1,5 +1,6 @@
 package io;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,7 +27,7 @@ public class ResourceHandler {
 
 	private Injector injector;
 	private ResourceSet resourceSet;
-	private static final String RESOURCE_DIRECTORY_URL_FRAGMENT = "/test/";
+	private static final String RESOURCE_DIRECTORY_URL_FRAGMENT = "/resources/";
 
 	public ResourceHandler() {
 		new org.eclipse.emf.mwe.utils.StandaloneSetup().setPlatformUri("../");
@@ -36,21 +37,21 @@ public class ResourceHandler {
 		this.resourceSet = resourceSet;
 		openAvailableResources();
 	}
-	
-	public Map<Object, Object> getLoadOptions(){
+
+	public Map<Object, Object> getLoadOptions() {
 		return resourceSet.getLoadOptions();
 	}
-	
-	public void openAvailableResources(){
+
+	public void openAvailableResources() {
 		java.net.URI directoryURL;
-		
+
 		try {
 			directoryURL = ResourceHandler.class.getResource(RESOURCE_DIRECTORY_URL_FRAGMENT).toURI();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		Path myPath;
 		if (directoryURL.getScheme().equals("jar")) {
 			FileSystem fileSystem;
@@ -64,7 +65,7 @@ public class ResourceHandler {
 		} else {
 			myPath = Paths.get(directoryURL);
 		}
-		
+
 		Stream<Path> walk;
 		try {
 			walk = Files.walk(myPath, 1);
@@ -72,40 +73,42 @@ public class ResourceHandler {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		ArrayList<Path> paths = new ArrayList<>();
 		walk.forEach(paths::add);
 		walk.close();
-		
-		for(Path path: paths){
-			if(path.toString().contains(".xml") || path.toString().contains(".mydsl")){
-				getResourceFrom(path.getFileName().toString());
+
+		for (Path path : paths) {
+			if (path.toString().contains(".mydsl")) {
+				try {
+					getResourceFrom(path.getFileName().toString(), false);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
-	public Resource getResourceFrom(String uri) {
+	public Resource getResourceFrom(String uri, boolean loadOnDemand) throws FileNotFoundException {
 		URL fileURL;
-		try{
-			fileURL = ResourceHandler.class.getResource(RESOURCE_DIRECTORY_URL_FRAGMENT + uri);
-			if(fileURL == null){
+
+		fileURL = ResourceHandler.class.getResource(RESOURCE_DIRECTORY_URL_FRAGMENT + uri);
+		if (fileURL == null) {
+			if (loadOnDemand) {
 				return createResource(uri);
 			}
-		}catch(IllegalStateException ex){
-			return createResource(uri);
+			throw new FileNotFoundException(uri);
 		}
-		
+
 		URI fileURI = URI.createFileURI(fileURL.getPath());
-		Resource resource = resourceSet
-				.getResource(fileURI, true);
+		Resource resource = resourceSet.getResource(fileURI, true);
 		return resource;
 	}
-	
-	private Resource createResource(String uri){
+
+	private Resource createResource(String uri) {
 		URL directoryURL = ResourceHandler.class.getResource(RESOURCE_DIRECTORY_URL_FRAGMENT);
-		URI fileURI = URI.createFileURI(directoryURL.getPath()+ uri);
-		Resource resource = resourceSet
-				.createResource(fileURI);
+		URI fileURI = URI.createFileURI(directoryURL.getPath() + uri);
+		Resource resource = resourceSet.createResource(fileURI);
 		return resource;
 	}
 }
