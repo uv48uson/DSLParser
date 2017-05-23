@@ -17,6 +17,7 @@ import parser.Parser;
 import parser.ParserImpl;
 
 public class Test_Parser extends XMLTestCase{
+	
 	Parser parser = new ParserImpl();
 	
 	@BeforeClass
@@ -51,7 +52,7 @@ public class Test_Parser extends XMLTestCase{
 		
 		Parser parser = new ParserImpl();
 		Document resultDoc = parser.parse(fileIOControl.readInputStreamFromFile("mydsl"));
-		
+		 
 		XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         
@@ -62,7 +63,7 @@ public class Test_Parser extends XMLTestCase{
 		FileIO fileIOControl = new FileIO(fileName);
 		InputStream controlStream = fileIOControl.readInputStreamFromFile("mydsl");
 		
-		Parser parser = new ParserImpl();
+		Parser parser = new ParserImpl("test");
 		InputStream resultStream = parser.deparse(fileIOControl.readDocumentFromFile());
 		
         assertTrue(IOUtils.contentEquals( controlStream, resultStream));
