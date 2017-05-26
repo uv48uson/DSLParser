@@ -14,7 +14,7 @@ import parser.ParserImpl;
 
 public class Test_fileIO {
 	@BeforeClass
-	public void setUp(){
+	public static void setUp(){
 		ParserImpl.init();
 		FileIO.init();
 	}

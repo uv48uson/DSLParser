@@ -6,7 +6,6 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -20,14 +19,11 @@ public class Test_Parser extends XMLTestCase{
 	
 	Parser parser = new ParserImpl();
 	
-	@BeforeClass
-	public void setUp(){
-		ParserImpl.init();
-		FileIO.init();
-	}
 	
 	@Test
 	public void test_simpleParseTest() throws IOException, MydslParsingException, SAXException {
+		ParserImpl.init();
+		FileIO.init();
 		checkParsing("simpleParseTestControl");
 	}
 	
