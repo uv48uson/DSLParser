@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,10 +20,10 @@ import parser.Parser;
 import parser.ParserImpl;
 
 public class Test_Parser_Exception {
-	private static final String PATH_TO_RESOURCES = "/resources/";
+	private static final String PATH_TO_RESOURCES = "TestFiles/";
 	
 	@BeforeClass
-	public void setUp(){
+	public static void setUp(){
 		ParserImpl.init();
 		FileIO.init();
 	}
@@ -32,16 +31,14 @@ public class Test_Parser_Exception {
 	@Test(expected=MydslParsingException.class)
 	public void test_IncorrectParsingInput() throws IOException, MydslParsingException, SAXException {
 		Parser parser = new ParserImpl();
-		URL url = getClass().getResource(PATH_TO_RESOURCES + "IncorrectParsing.mydsl");
-		File incorrectMydslFile = new File(url.getPath());
+		File incorrectMydslFile = new File(PATH_TO_RESOURCES + "IncorrectParsing.mydsl");
 		InputStream stream = new FileInputStream(incorrectMydslFile);
 		parser.parse(stream);
 	}
 	
 	@Test(expected=IOException.class)
 	public void test_IncorrectDeparsingInput() throws IOException, MydslParsingException, SAXException, ParserConfigurationException {
-		URL url = getClass().getResource(PATH_TO_RESOURCES + "IncorrectDeparsing.xml");
-		File incorrectXMLFile = new File(url.getPath());
+		File incorrectXMLFile = new File(PATH_TO_RESOURCES + "IncorrectDeparsing.xml");
 		
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
