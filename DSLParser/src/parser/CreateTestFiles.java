@@ -11,7 +11,7 @@ import io.FileIO;
 public class CreateTestFiles {
 	public static Parser parser = new ParserImpl();
 
-	public static void main(String[] args) throws IOException, MydslParsingException, SAXException {
+	public static void createTestFiles() throws IOException, MydslParsingException, SAXException {
 		initLogger();
 		
 		//***********************************************simpleParseTestControl*******************************************
