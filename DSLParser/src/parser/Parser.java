@@ -10,7 +10,7 @@ public interface Parser {
 	
 	/**
 	 * Parsing the InputStream to a w3c.dom Document, using the MyDsl Syntax. To resolve dependencies, the necessary files should
-	 * be located at src/resources. After clean build all files from src/resources are transfered to target/classes/resources.
+	 * be located at /TestFiles/ (TestFiles should be in the same directory as the jar itself).
 	 * On Parser construction a fileIO instance with an associated ResourceHandler is created, which then tries to register all
 	 * files containing a ".mydsl" char-sequence in there name and are located in the resource folder.
 	 * Cross-reference resolution is resolved over the resourceSet afterwards. The files were pre-registerd not pre-loaded. They
@@ -28,11 +28,11 @@ public interface Parser {
 	
 	/**
 	 * Deparsing a w3c.dom Document containing a valid mydsl-AST into an inputStream containing the original mydsl-language-code.
-	 * To resolve dependencies, the necessary "mydsl"-files should be located at src/resources. After clean build all files from 
-	 * src/resources are transfered to target/classes/resources. On Parser construction a fileIO instance with an associated 
-	 * ResourceHandler is created, which then tries to register all files containing a ".mydsl" char-sequence in there name and 
-	 * are located in the resource folder. Cross-reference resolution is resolved over the resourceSet afterwards. The files were 
-	 * pre-registerd not pre-loaded. They get loaded on demand.
+	 * To resolve dependencies, the necessary "mydsl"-files should be located at /TestFiles/ (TestFiles should be in the same 
+	 * directory as the jar itself). 
+	 * On Parser construction a fileIO instance with an associated ResourceHandler is created, which then tries to register all 
+	 * files containing a ".mydsl" char-sequence in there name and are located in the resource folder. Cross-reference resolution
+	 * is resolved over the resourceSet afterwards. The files were pre-registerd not pre-loaded. They get loaded on demand.
 	 * While deparsing temporary files "tmp.xml" and "tmp.mydsl" are generated. These files are supposed to not exist anymore after
 	 * the deparsing workflow has ended.
 	 * 
