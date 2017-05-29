@@ -3,6 +3,7 @@ package io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -16,10 +17,18 @@ import com.google.inject.Injector;
 
 public class ResourceHandler {
 
+	private static ResourceHandler INSTANCE; 
 	private Injector injector;
 	private ResourceSet resourceSet;
 
-	public ResourceHandler() {
+	public static ResourceHandler getInstance(){
+		if(INSTANCE == null){
+			INSTANCE = new ResourceHandler();
+		}
+		return INSTANCE;
+	}
+	
+	private ResourceHandler() {
 		new org.eclipse.emf.mwe.utils.StandaloneSetup().setPlatformUri("../");
 		injector = new MyDslStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
@@ -44,5 +53,9 @@ public class ResourceHandler {
 			Resource resource = resourceSet.getResource(uri, true);
 			return resource;
 		}
+	}
+	
+	public List<Resource> getResources(){
+		return resourceSet.getResources();
 	}
 }
