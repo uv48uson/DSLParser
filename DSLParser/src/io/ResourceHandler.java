@@ -3,6 +3,7 @@ package io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -44,5 +45,9 @@ public class ResourceHandler {
 			Resource resource = resourceSet.getResource(uri, true);
 			return resource;
 		}
+	}
+	
+	public List<Resource> getResources(){
+		return resourceSet.getResources();
 	}
 }
