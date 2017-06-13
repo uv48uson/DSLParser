@@ -36,7 +36,7 @@ import parser.MydslParsingException;
 
 public class FileIO {
 	private String fileName;
-	private ResourceHandler resourceHandler = ResourceHandler.getInstance();
+	private ResourceHandler resourceHandler = new ResourceHandler();
 	private static Logger log = Logger.getLogger(FileIO.class);
 	private static final String RESOURCE_DIRECTORY_URL_FRAGMENT = "TestFiles/";
 
